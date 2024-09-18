@@ -1,6 +1,6 @@
 import catchAsyncErrorsMiddleware from '../middlewares/catchAsyncErrors.middleware.js';
 import userModel from '../models/user.model.js';
-import { upload_user_avatar_file } from '../Utils/cloudnary.js';
+import { delete_user_avatar_file, upload_user_avatar_file } from '../Utils/cloudnary.js';
 import { getResetPasswordTemplate } from '../Utils/emailTemplates.js';
 import ErrorHandler from '../Utils/ErrorHandler.js';
 import sendEmail from '../Utils/sendEmail.js';
@@ -266,12 +266,15 @@ export const deleteUserDetails_admin = catchAsyncErrorsMiddleware(
 
 export const upload_avatar = catchAsyncErrorsMiddleware(
 	async (req, res, next) => {
-		console.log('In avatar area');
-
 		const avatar_response = await upload_user_avatar_file(
 			req.body.avatar,
 			'brickdroid-images/avatars'
 		);
+
+		//REMOVE PREVIOUS AVATAR
+		if(req?.user?.avatar?.url) {
+			await delete_user_avatar_file(req?.user?.avatar?.public_id)
+		}
 
 		const user = await userModel.findByIdAndUpdate(req?.user?._id, {
 			avatar: avatar_response,

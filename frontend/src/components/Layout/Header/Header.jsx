@@ -8,13 +8,13 @@ import Search from '../Search/Search';
 import { useSelector } from 'react-redux';
 import { useLazyLogoutUserQuery } from '../../../redux/api/authApi';
 import { useGetMeQuery } from '../../../redux/api/userApi';
+import default_avatar from '../../../assets/default_avatar.jpg';
 
 const Header = () => {
 	const [isNavVisible, setNavVisible] = useState(false);
 	const [isSearchOpen, setSearchOpen] = useState(false);
 	const [isSticky, setIsSticky] = useState(false);
 	const [isDropdownOpen, setDropdownOpen] = useState(false);
-	const [isLogoutSuccessful, setIsLogoutSuccessful] = useState(false);
 
 	const dropdownRef = useRef(null); // Reference to the dropdown element
 	const searchPanelRef = useRef(null); // Reference to the search panel
@@ -176,7 +176,11 @@ const Header = () => {
 								className='flex items-center md:hidden cursor-pointer'
 							>
 								<img
-									src='https://images.pexels.com/photos/774095/pexels-photo-774095.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+									src={
+										user?.avatar
+											? user?.avatar?.url
+											: default_avatar
+									}
 									alt={`${user.name}'s profile`}
 									className='w-12 h-12  rounded-full'
 								/>
@@ -211,7 +215,11 @@ const Header = () => {
 						className='relative hidden md:flex items-center cursor-pointer'
 					>
 						<img
-							src='https://images.pexels.com/photos/774095/pexels-photo-774095.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+							src={
+								user?.avatar
+									? user?.avatar?.url
+									: default_avatar
+							}
 							alt={`${user.name}'s profile`}
 							className='w-12 h-12 rounded-full'
 							onClick={toggleDropdown}

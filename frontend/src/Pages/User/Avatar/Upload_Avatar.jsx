@@ -9,7 +9,7 @@ import default_avatar from '../../../assets/default_avatar.jpg';
 const Upload_Avatar = () => {
 	const [avatar, setAvatar] = useState('');
 
-	const user = useSelector((state) => state.auth);
+	const { user } = useSelector((state) => state.auth);
 
 	const [avatarPreview, setAvatarPreview] = useState(
 		user?.avatar ? user?.avatar?.url : default_avatar
