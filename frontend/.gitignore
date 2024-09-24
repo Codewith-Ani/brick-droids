@@ -13,8 +13,8 @@ backend/node_modules
 frontend/node_modules
 
 # Build outputs
-dist
-dist-ssr
+# dist
+# dist-ssr
 
 # Local environment files
 *.local
