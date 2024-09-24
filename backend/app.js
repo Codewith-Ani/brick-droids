@@ -23,8 +23,10 @@ process.on('uncaughtException', (err) => {
 	process.exit(1);
 });
 
-dotenv.config({ path: 'backend/config/config.env' });
-const PORT = process.env.PORT || 8000;
+if (process.env.NODE_ENV !== 'PRODUCTION') {
+	dotenv.config({ path: 'backend/config/config.env' });
+}
+// const PORT = process.env.PORT || 8000;
 
 // Connecting to Database
 connectDatabase();
@@ -72,5 +74,7 @@ app.use(errorMiddleware);
 
 // App Listen
 const server = app.listen(process.env.PORT, () => {
-	console.log(`Server started on PORT: ${PORT} in ${process.env.NODE_ENV}`);
+	console.log(
+		`Server started on PORT: ${process.env.PORT} in ${process.env.NODE_ENV}`
+	);
 });
