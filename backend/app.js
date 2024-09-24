@@ -72,5 +72,5 @@ app.use(errorMiddleware);
 
 // App Listen
 const server = app.listen(process.env.PORT, () => {
-	console.log(`Server started on PORT: ${PORT}`);
+	console.log(`Server started on PORT: ${PORT} in ${process.env.NODE_ENV}`);
 });

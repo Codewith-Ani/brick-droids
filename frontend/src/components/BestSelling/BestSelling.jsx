@@ -1,6 +1,7 @@
 import React from 'react';
 import { useGetBestSellerProductsQuery } from '../../redux/api/productsApi';
 import { useNavigate } from 'react-router-dom';
+import default_image2 from '../../assets/droid2.png';
 
 const BestSelling = () => {
 	const { data, isLoading, error, isError } = useGetBestSellerProductsQuery();
@@ -46,14 +47,15 @@ const BestSelling = () => {
 						className='rounded-lg shadow-lg bg-gray-800 overflow-hidden cursor-pointer'
 						onClick={() => handleProductClick(product)}
 					>
-						<div className='w-full h-60 md:h-72 lg:h-80'>
+						<div className='w-full aspect-square'>
 							<img
-								src={product.images[0].url}
+								src={default_image2}
+								// src={product.images[0].url}
 								alt={product.title}
-								className='w-full h-full object-fill'
+								className='w-full'
 							/>
 						</div>
-						<div className='p-4'>
+						<div className='p-4 h-[120px]'>
 							<h3
 								className='text-base md:text-lg font-semibold text-white overflow-hidden text-ellipsis whitespace-nowrap'
 								title={product.name}

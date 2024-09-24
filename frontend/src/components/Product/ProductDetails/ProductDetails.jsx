@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import default_image from '../../../assets/default_product.png';
+
+import default_image from '../../../assets/droid1.jpg';
+import default_image2 from '../../../assets/droid2.png';
 import { useGetProductsDetailsQuery } from '../../../redux/api/productsApi';
 import { useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import Loader from '../../Layout/Loader/Loader';
 import StarRatings from 'react-star-ratings';
+import { useDispatch, useSelector } from 'react-redux';
+import { setCartItem, removeCartItem } from '../../../redux/features/cartSlice';
 
 const ProductDetails = () => {
-	const params = useParams();
-	const { data, isLoading, isError, error } = useGetProductsDetailsQuery(
-		params?.id
-	);
+	const { id } = useParams();
+	const dispatch = useDispatch();
+	const { data, isLoading, isError, error } = useGetProductsDetailsQuery(id);
 	const product = data?.product;
+	const cartItems = useSelector((state) => state.cart.cartItems); // Access cart items from state
 
 	const [activeImage, setActiveImage] = useState('');
 	const [quantity, setQuantity] = useState(1);
@@ -32,32 +36,66 @@ const ProductDetails = () => {
 
 	if (isLoading) return <Loader />;
 
+	const setItemToCart = () => {
+		const cartItem = {
+			product: product?._id,
+			name: product?.name,
+			price: product?.price,
+			image: product?.images?.[0]?.url,
+			stock: product?.stock,
+			quantity,
+		};
+
+		// Find the item in the cart
+		const existingItem = cartItems.find(
+			(i) => i.product === cartItem.product
+		);
+
+		// Check if the total quantity exceeds the available stock
+		const totalQuantityInCart = existingItem
+			? existingItem.quantity + quantity
+			: quantity;
+
+		if (totalQuantityInCart > product?.stock) {
+			toast.error('Cannot add more than available stock.');
+			return;
+		}
+
+		// Dispatch action to add/update the cart
+		dispatch(setCartItem(cartItem));
+	};
+
 	return (
-		<div className='flex flex-col  gap-6 p-6 bg-gray-900 min-h-screen text-white'>
+		<div className='flex flex-col gap-6 p-6 bg-gray-900 min-h-screen text-white'>
 			<div className='flex flex-col md:flex-row gap-8'>
 				{/* Thumbnail Images */}
 				<div className='flex flex-col-reverse md:flex-row md:w-[50%]'>
-					<div className='flex p-2 flex-row md:flex-col bg-gray-800 w-[20%]  gap-6 md:justify-center'>
+					<div className='flex p-2 flex-row md:flex-col w-[20%] relative bg-white h-[60vh] overflow-y-scroll gap-6 md:justify-center'>
+						{/* {product?.images?.map((img, index) => ( */}
 						{product?.images?.map((img, index) => (
 							<img
-								className={`w-[100%] object-fill aspect-square rounded-md cursor-pointer border-2 ${
+								className={`w-[100%]  object-fill aspect-square rounded-md cursor-pointer border-2 ${
 									img.url === activeImage
 										? 'border-black'
 										: 'border-gray-300'
 								} hover:border-black`}
 								key={index}
-								src={img.url}
+								//								src={img.url || default_image}
+								src={default_image}
 								alt={`Thumbnail ${index + 1}`}
-								onClick={() => setActiveImage(img.url)}
+								onClick={() =>
+									setActiveImage(img.url || default_image)
+								}
 							/>
 						))}
 					</div>
 
 					{/* Main Image */}
-					<div className='flex-1 flex items-center justify-center'>
+					<div className='flex-1 flex items-center  justify-center'>
 						<img
-							className='w-full max-w-lg  h-[80vh] md:h-auto object-fill rounded-lg shadow-lg'
-							src={activeImage}
+							className='w-full  max-w-lg  h-[80vh] md:h-auto object-fill rounded-lg shadow-lg'
+							// src={activeImage || default_image}
+							src={default_image2}
 							alt={product?.name || 'Product Image'}
 						/>
 					</div>
@@ -65,7 +103,7 @@ const ProductDetails = () => {
 
 				{/* Product Details */}
 				<div className='flex-1'>
-					<h1 className='text-lg md:text-4xl font-bold mb-3'>
+					<h1 className='text-lg md:text-4xl font-bold  mb-3'>
 						{product?.name}
 					</h1>
 					<p className='mb-2'>Product ID: {product?._id}</p>
@@ -99,13 +137,14 @@ const ProductDetails = () => {
 						>
 							-
 						</button>
-						<span className=' text-white px-5 py-2 text-lg'>
-							{quantity}
+						<span className='text-white px-5 py-2 text-lg'>
+							{product?.stock > 0 ? quantity : 0}
 						</span>
 						<button
 							onClick={() => handleQuantityChange(1)}
 							className='bg-gray-500 text-white px-4 py-2 rounded-r text-lg hover:bg-gray-700'
 							aria-label='Increase Quantity'
+							disabled={product?.stock === quantity}
 						>
 							+
 						</button>
@@ -113,78 +152,46 @@ const ProductDetails = () => {
 
 					<button
 						type='button'
-						className='bg-gray-700 text-white font-bold py-3 px-6 rounded hover:bg-gray-900 hover:border-white  transition duration-300 w-full md:w-auto mb-4'
+						className='bg-gray-700 text-white font-bold py-3 px-6 rounded hover:bg-gray-500 transition duration-300 w-full md:w-auto mb-4'
+						onClick={setItemToCart}
+						disabled={product?.stock === 0}
 					>
-						Add to Cart
+						{cartItems.find((i) => i.product === product?._id)
+							? 'Update Cart'
+							: 'Add to Cart'}
 					</button>
 
 					{/* Product Status */}
-					<p className='mt-2'>
-						Status:
-						<span
-							className={
-								product?.stock > 0
-									? 'text-green-500'
-									: 'text-red-500'
-							}
-						>
-							{product?.stock > 0 ? 'In Stock' : 'Out of Stock'}
-						</span>
-					</p>
+					<div className='flex justify-start gap-3 items-center mt-2'>
+						<p className=''>
+							Status:
+							<span
+								className={
+									product?.stock > 0
+										? 'text-green-500'
+										: 'text-red-500'
+								}
+							>
+								{product?.stock > 0
+									? ' In Stock '
+									: ' Out of Stock '}
+							</span>
+						</p>
 
-					{/* Description */}
-					<h4 className='mt-4 text-lg font-semibold'>Description:</h4>
-					<p className='mb-4'>{product?.description}</p>
-					<p className='mb-3'>
-						Sold by: <strong>{product?.seller}</strong>
-					</p>
-					<p className='mb-3'>
-						Category:
-						<strong> {product?.category.join(', ')}</strong>
-					</p>
-				</div>
-			</div>
-
-			{/* Customer Reviews */}
-			<div className='mt-8'>
-				<h2 className='text-2xl font-bold mb-4'>Customer Reviews</h2>
-				{product?.reviews?.length ? (
-					product.reviews.map((review, index) => (
-						<div
-							key={index}
-							className='bg-gray-800 p-4 rounded-lg shadow-md mb-4 text-white'
-						>
-							<p className='text-lg mb-2'>
-								<strong>{review.author}</strong>{' '}
-								<span className='text-sm text-gray-400'>
-									({review.date})
-								</span>
+						{product?.stock <= 5 && product?.stock > 0 && (
+							<p className='text-orange-500 font-bold'>
+								Hurry! Only {product?.stock} left.
 							</p>
-							<p className='mb-2'>{review.comment}</p>
-							<div className='flex items-center'>
-								<StarRatings
-									rating={review.rating}
-									starRatedColor='#ffb829'
-									numberOfStars={5}
-									name={`review-rating-${index}`}
-									starDimension='20px'
-									starSpacing='1px'
-									readonly
-								/>
-								<span className='ml-2 text-sm'>
-									({review.rating})
-								</span>
-							</div>
-						</div>
-					))
-				) : (
-					<p className='text-gray-400'>No reviews yet.</p>
-				)}
+						)}
+					</div>
 
-				<div className='mt-6 text-center'>
-					<p className='bg-gray-500 text-white py-2 px-4 rounded'>
-						Login to post your review.
-					</p>
+					{/* Product Description */}
+					<div className='mt-6'>
+						<h2 className='text-lg font-semibold mb-2'>
+							Description
+						</h2>
+						<p>{product?.description}</p>
+					</div>
 				</div>
 			</div>
 		</div>

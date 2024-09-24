@@ -13,9 +13,13 @@ import NotFound from '../components/Layout/NotFound/NotFound';
 import { SearchProvider } from '../context/SearchContext';
 import UserProfile from '../Pages/User/Profile/UserProfile';
 import UpdateProfile from '../Pages/User/Profile/UpdateProfile';
-import UpdatePassword from '../Pages/User/Password/UpdatePassword';
+import UpdatePassword from '../Pages/User/Profile/UpdatePassword';
 import ProtectedRoute from '../components/Auth/ProtectedRoute';
-import Upload_Avatar from '../Pages/User/Avatar/Upload_Avatar';
+import Upload_Avatar from '../Pages/User/Profile/Upload_Avatar';
+import ForgotPassword from '../Pages/User/Profile/ForgotPassword';
+import ResetPassword from '../Pages/User/Profile/ResetPassword';
+import Cart from '../components/Cart/Cart';
+import Shipping from '../components/Cart/Shipping';
 
 const App = () => {
 	return (
@@ -91,6 +95,32 @@ const App = () => {
 								}
 							/>
 
+							<Route
+								path='/forgot_password'
+								element={<ForgotPassword />}
+							/>
+							<Route
+								path='/password/reset/:token'
+								element={<ResetPassword />}
+							/>
+
+							<Route
+								path='/cart'
+								element={
+									<ProtectedRoute>
+										<Cart />
+									</ProtectedRoute>
+								}
+							/>
+
+							<Route
+								path='/shipping'
+								element={
+									<ProtectedRoute>
+										<Shipping />
+									</ProtectedRoute>
+								}
+							/>
 							<Route
 								path='*'
 								element={<NotFound />}

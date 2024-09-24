@@ -15,9 +15,12 @@ export const userSlice = createSlice({
 		},
 		setisAuthenticated(state, action) {
 			state.isAuthenticated = action.payload;
-		},  
+		},
+		setisLoading(state, action) {
+			state.isLoading = action.payload;
+		},
 	},
 });
 
 export default userSlice.reducer;
-export const { setUser, setisAuthenticated } = userSlice.actions;
+export const { setUser, setisAuthenticated, setisLoading } = userSlice.actions;

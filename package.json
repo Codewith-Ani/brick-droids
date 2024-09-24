@@ -5,9 +5,10 @@
 	"type": "module",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"dev": "nodemon ./backend/app.js",
 		"start": "node ./backend/app.js",
-		"seeder": "node backend/seeder/seeder.js"
+		"seeder": "node backend/seeder/seeder.js",
+		"DEV": "cross-env NODE_ENV=DEVELOPMENT nodemon backend/app.js",
+		"PROD": "cross-env NODE_ENV=PRODUCTION node backend/app.js"
 	},
 	"author": "Animesh Jha",
 	"license": "ISC",
@@ -24,6 +25,7 @@
 		"nodemailer": "^6.9.14"
 	},
 	"devDependencies": {
+		"cross-env": "^7.0.3",
 		"nodemon": "^3.1.4"
 	}
 }

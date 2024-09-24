@@ -2,7 +2,8 @@ import React, { useEffect } from 'react';
 import { useGetProductsQuery } from '../../redux/api/productsApi';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Oval } from 'react-loader-spinner';
-import default_image from '../../assets/default_product.png';
+import default_image from '../../assets/droid1.jpg';
+import default_image2 from '../../assets/droid2.png';
 import toast from 'react-hot-toast';
 import Metadata from '../../components/Layout/Metadata/Metadata';
 import CustomPagination from '../../components/Layout/CustomPagination/CustomPagination';
@@ -69,10 +70,13 @@ const Products = () => {
 								const discountPrice = (
 									product.price * 0.9
 								).toFixed(2); // Assuming a 10% discount
-								const hoverImage =
+								/* const hoverImage =
 									product?.images[1]?.url || default_image;
 								const defaultImage =
 									product?.images[0]?.url || default_image;
+								 */
+								const hoverImage = default_image;
+								const defaultImage = default_image2;
 
 								return (
 									<Link

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useGetLatestProductsQuery } from '../../redux/api/productsApi';
 import { useNavigate } from 'react-router-dom';
+import default_image from '../../assets/droid1.jpg';
 
 const LatestProducts = () => {
 	// Fetch products based on category 'Latest'
@@ -46,14 +47,15 @@ const LatestProducts = () => {
 						className='rounded-lg cursor-pointer shadow-lg bg-gray-800 overflow-hidden'
 						onClick={() => handleProductClick(product)}
 					>
-						<div className='w-full h-60 md:h-72 lg:h-80'>
+						<div className='w-full'>
 							<img
-								src={product.images[0].url}
+								// src={product.images[0].url}
+								src={default_image}
 								alt={product.title}
-								className='w-full h-full object-fill'
+								className='w-full'
 							/>
 						</div>
-						<div className='p-4'>
+						<div className='p-4 h-[120px]'>
 							<h3
 								className='text-base md:text-lg font-semibold text-white overflow-hidden text-ellipsis whitespace-nowrap'
 								title={product.name}

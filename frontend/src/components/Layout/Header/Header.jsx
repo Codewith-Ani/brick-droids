@@ -21,8 +21,9 @@ const Header = () => {
 	const location = useLocation();
 	const navigate = useNavigate(); // Hook for navigation
 
-	const [logout, { isSuccess }] = useLazyLogoutUserQuery();
+	const [logout] = useLazyLogoutUserQuery();
 	const { user } = useSelector((state) => state.auth);
+	const { cartItems } = useSelector((state) => state.cart);
 
 	useEffect(() => {
 		const handleScroll = () => {
@@ -251,12 +252,17 @@ const Header = () => {
 					</Link>
 				)}
 				<div className='relative'>
-					<FaShoppingBasket
-						className='text-3xl text-white'
-						aria-label='Basket'
-					/>
+					<Link to='/cart'>
+						<FaShoppingBasket
+							className='text-3xl text-white'
+							aria-label='Basket'
+						/>
+					</Link>
 					<span className='absolute top-[-8px] right-[-10px] bg-red-600 text-white rounded-full px-2 text-xs'>
-						0
+						{cartItems.reduce(
+							(total, item) => total + item.quantity,
+							0
+						)}
 					</span>
 				</div>
 				<FaSearch

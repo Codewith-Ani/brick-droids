@@ -1,6 +1,9 @@
 import catchAsyncErrorsMiddleware from '../middlewares/catchAsyncErrors.middleware.js';
 import userModel from '../models/user.model.js';
-import { delete_user_avatar_file, upload_user_avatar_file } from '../Utils/cloudnary.js';
+import {
+	delete_user_avatar_file,
+	upload_user_avatar_file,
+} from '../Utils/cloudnary.js';
 import { getResetPasswordTemplate } from '../Utils/emailTemplates.js';
 import ErrorHandler from '../Utils/ErrorHandler.js';
 import sendEmail from '../Utils/sendEmail.js';
@@ -76,7 +79,7 @@ export const forgotPassword = catchAsyncErrorsMiddleware(
 		await user.save();
 		console.log(user);
 
-		const resetUrl = `${process.env.FRONTEND_URL}/api/v1/password/reset/${resetToken}`;
+		const resetUrl = `${process.env.FRONTEND_URL}/password/reset/${resetToken}`;
 
 		const message = getResetPasswordTemplate(user?.name, resetUrl);
 
@@ -103,6 +106,8 @@ export const forgotPassword = catchAsyncErrorsMiddleware(
 
 export const resetUserPassword = catchAsyncErrorsMiddleware(
 	async (req, res, next) => {
+		console.log('RESET PASSWORD START');
+
 		const resetPasswordToken = crypto
 			.createHash('sha256')
 			.update(req.params.token)
@@ -112,6 +117,10 @@ export const resetUserPassword = catchAsyncErrorsMiddleware(
 			resetPasswordToken,
 			resetPasswordExpire: { $gt: Date.now() },
 		});
+
+		if (user) {
+			console.log('IN RESET PASSWORD ');
+		}
 
 		if (!user) {
 			return next(
@@ -272,8 +281,8 @@ export const upload_avatar = catchAsyncErrorsMiddleware(
 		);
 
 		//REMOVE PREVIOUS AVATAR
-		if(req?.user?.avatar?.url) {
-			await delete_user_avatar_file(req?.user?.avatar?.public_id)
+		if (req?.user?.avatar?.url) {
+			await delete_user_avatar_file(req?.user?.avatar?.public_id);
 		}
 
 		const user = await userModel.findByIdAndUpdate(req?.user?._id, {
